@@ -10,7 +10,11 @@ public class SmokeTest extends BaseTest {
 
     @Test
     public void openHomePage() {
-        String title = driver.getTitle(); // koristimo BaseTest.driver
+
+        // Use driver in coordination with FactoryDriver file
+        String title = driver.getTitle();
+
+        // Verify that title contain text "Swag Labs"
         Assert.assertTrue(title.contains("Swag Labs"),
                 "Title did not contain expected text. Actual: " + title);
 
