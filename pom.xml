@@ -19,8 +19,8 @@
         <webdrivermanager.version>5.4.0</webdrivermanager.version>
         <extentreports.version>5.1.2</extentreports.version>
         <log4j.version>2.25.0</log4j.version>
+        <jackson.version>2.15.2</jackson.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Default browser property -->
         <browser>chrome</browser>
     </properties>
 
@@ -41,6 +41,11 @@
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-picocontainer</artifactId>
             <version>${cucumber.version}</version>
         </dependency>
 
@@ -76,6 +81,23 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+
+        <!-- Jackson (needed by Log4j + Cucumber) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
