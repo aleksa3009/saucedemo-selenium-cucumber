@@ -2,17 +2,10 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import utils.ConfigUtil;
 import utils.DriverFactory;
 import utils.WaitUtil;
 
-import java.time.Duration;
-
-/**
- * HomePage / LoginPage for SauceDemo.
- * Compatible with BaseTest + DriverFactory + ConfigUtil + WaitUtil.
- */
 public class LoginPage {
 
     private WebDriver driver;
@@ -24,6 +17,8 @@ public class LoginPage {
     private By passwordInput = By.id("password");
     private By loginButton = By.id("login-button");
     private By errorMessageBox = By.cssSelector("[data-test='error']");
+    private By burgerMenu = By.id("react-burger-menu-btn");
+    private By logoutLink = By.id("logout_sidebar_link");
 
     // Constants
     public final String correctPassword = "secret_sauce";
@@ -39,8 +34,8 @@ public class LoginPage {
 
     // Constructor
     public LoginPage() {
-        this.driver = DriverFactory.getDriver(); // get driver from DriverFactory
-        this.waitUtil = new WaitUtil(driver);    // use explicit waits from WaitUtil
+        this.driver = DriverFactory.getDriver();
+        this.waitUtil = new WaitUtil(driver);
     }
 
     // Open login page
@@ -72,11 +67,25 @@ public class LoginPage {
         clickLogin();
     }
 
-    // Get error message (empty string if not displayed)
+    // Click burger menu
+    public void clickBurgerMenu() {
+        waitUtil.waitForClickable(burgerMenu).click();
+    }
+
+    // Click logout link
+    public void clickLogout() {
+        waitUtil.waitForClickable(logoutLink).click();
+    }
+
+    // Get error message
     public String getErrorMessage() {
-        if (waitUtil.waitForVisibility(errorMessageBox) != null &&
-                waitUtil.waitForVisibility(errorMessageBox).isDisplayed()) {
-            return waitUtil.waitForVisibility(errorMessageBox).getText();
+        try {
+            if (waitUtil.waitForVisibility(errorMessageBox) != null &&
+                    waitUtil.waitForVisibility(errorMessageBox).isDisplayed()) {
+                return waitUtil.waitForVisibility(errorMessageBox).getText();
+            }
+        } catch (Exception e) {
+            // element not visible
         }
         return "";
     }
@@ -99,7 +108,6 @@ public class LoginPage {
     }
 
     public boolean isAtInventoryPage() {
-        // Simple check: URL contains inventory.html
         return driver.getCurrentUrl().contains("inventory.html");
     }
 
