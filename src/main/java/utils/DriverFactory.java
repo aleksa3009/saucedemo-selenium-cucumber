@@ -7,15 +7,13 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DriverFactory {
 
-    // ThreadLocal to support parallel test execution
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
-    /**
-     * Initialize WebDriver based on browser type.
-     * If browser is not provided, it uses system property or defaults to Chrome.
-     */
     public static WebDriver initDriver(String browser) {
         if (browser == null || browser.isEmpty()) {
             browser = System.getProperty("browser", "chrome");
@@ -25,14 +23,31 @@ public class DriverFactory {
             case "chrome":
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
-                // chromeOptions.addArguments("--headless=new"); // uncomment for headless mode
+
+                // Disable notifications and pop-ups via Chrome preferences
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("profile.default_content_setting_values.notifications", 2); // 2 = block
+                prefs.put("profile.default_content_setting_values.popups", 0);       // 0 = block
+                chromeOptions.setExperimentalOption("prefs", prefs);
+
+                // Optional: headless mode
+                // chromeOptions.addArguments("--headless=new");
+
                 driver.set(new ChromeDriver(chromeOptions));
                 break;
 
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                // firefoxOptions.addArguments("-headless"); // uncomment for headless mode
+
+                // Disable notifications and pop-ups
+                firefoxOptions.addPreference("dom.webnotifications.enabled", false);
+                firefoxOptions.addPreference("dom.disable_open_during_load", true);
+                firefoxOptions.addPreference("dom.popup_maximum", 0);
+
+                // Optional: headless mode
+                // firefoxOptions.addArguments("-headless");
+
                 driver.set(new FirefoxDriver(firefoxOptions));
                 break;
 
@@ -40,17 +55,17 @@ public class DriverFactory {
                 throw new IllegalArgumentException("Unknown browser: " + browser);
         }
 
+        // Maximize window
         getDriver().manage().window().maximize();
         return getDriver();
     }
 
-
-    // Get the current WebDriver instance.
+    // Get current WebDriver instance
     public static WebDriver getDriver() {
         return driver.get();
     }
 
-    // Quit the WebDriver and remove it from ThreadLocal.
+    // Quit WebDriver and remove from ThreadLocal
     public static void quitDriver() {
         if (driver.get() != null) {
             driver.get().quit();
