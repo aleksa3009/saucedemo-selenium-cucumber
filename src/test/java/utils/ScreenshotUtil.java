@@ -11,41 +11,33 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Utility class for taking screenshots.
- * Can be used for capturing the screen on test failure.
- */
+// Utility class for capturing screenshots on test failure.
 public class ScreenshotUtil {
 
     /**
-     * Takes a screenshot and saves it to /screenshots/ folder with timestamp.
-     * @param driver The WebDriver instance
-     * @param name   Name to use for the screenshot file
+     * Captures a screenshot and saves it under /screenshots/ with timestamp.
+     * @param driver WebDriver instance
+     * @param testName name of the test method
      */
-    public static void takeScreenshot(WebDriver driver, String name) {
-        // Create screenshots directory if it doesn't exist
+    public static void captureScreenshot(WebDriver driver, String testName) {
         try {
+            // Ensure screenshots directory exists
             Files.createDirectories(Paths.get("screenshots"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        // Format timestamp
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            // Build file name with timestamp
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String filePath = "screenshots/" + testName + "_" + timestamp + ".png";
 
-        // Build file path
-        String filePath = "screenshots/" + name + "_" + timestamp + ".png";
+            // Capture screenshot
+            TakesScreenshot ts = (TakesScreenshot) driver;
+            File srcFile = ts.getScreenshotAs(OutputType.FILE);
+            File destFile = new File(filePath);
 
-        // Take screenshot
-        TakesScreenshot ts = (TakesScreenshot) driver;
-        File srcFile = ts.getScreenshotAs(OutputType.FILE);
-        File destFile = new File(filePath);
-
-        try {
             Files.copy(srcFile.toPath(), destFile.toPath());
-            System.out.println("Screenshot saved: " + filePath);
+            LoggerUtil.info("Screenshot saved: " + filePath);
+
         } catch (IOException e) {
-            e.printStackTrace();
+            LoggerUtil.error("Failed to save screenshot: " + e.getMessage());
         }
     }
 }
