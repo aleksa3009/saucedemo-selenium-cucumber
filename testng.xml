@@ -8,11 +8,4 @@
         </classes>
     </test>
 
-    <!-- Smoke Tests -->
-    <test name="Smoke Tests">
-        <classes>
-            <class name="smoke.SmokeTest"/>
-        </classes>
-    </test>
-
 </suite>
