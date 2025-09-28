@@ -1,6 +1,11 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="SauceDemo Suite">
 
+    <listeners>
+        <listener class-name="org.testng.reporters.EmailableReporter2"/>
+        <listener class-name="utils.RetryTransformer"/>
+    </listeners>
+
     <!-- Cucumber Tests -->
     <test name="Cucumber Features">
         <classes>
