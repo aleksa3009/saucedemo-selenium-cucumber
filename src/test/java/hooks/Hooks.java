@@ -7,6 +7,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import utils.ConfigUtil;
 import utils.DriverFactory;
+import utils.ExtentTestManager;
 
 public class Hooks {
 
@@ -21,6 +22,10 @@ public class Hooks {
         // Initialize driver and navigate to base URL
         DriverFactory.initDriver(browser);
         DriverFactory.getDriver().get(ConfigUtil.getBaseUrl());
+
+        // Start ExtentTest for this scenario
+        ExtentTestManager.startTest(scenario.getName(), scenario.getId());
+        ExtentTestManager.getTest().info("Starting scenario: " + scenario.getName()); // log start
     }
 
     @After
@@ -32,10 +37,25 @@ public class Hooks {
                         .getScreenshotAs(OutputType.BYTES);
                 scenario.attach(screenshot, "image/png", "screenshot-" + scenario.getName());
                 logger.error("Scenario failed: {} - screenshot attached", scenario.getName());
+
+                // Add screenshot path to ExtentTest if saved via ScreenshotUtil
+                String path = ExtentTestManager.getAndRemoveScreenShotPath();
+                if (path != null) {
+                    ExtentTestManager.getTest().fail("Scenario failed. Screenshot:")
+                            .addScreenCaptureFromPath(path);
+                } else {
+                    ExtentTestManager.getTest().fail("Scenario failed (no screenshot available)");
+                }
+
             } catch (Exception e) {
                 logger.error("Failed to capture screenshot: {}", e.getMessage());
             }
+        } else {
+            ExtentTestManager.getTest().pass("Scenario passed");
         }
+
+        // End ExtentTest
+        ExtentTestManager.endTest();
 
         // Quit driver after each scenario
         DriverFactory.quitDriver();
